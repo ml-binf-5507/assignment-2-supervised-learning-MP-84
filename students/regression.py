@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import ElasticNet
 from sklearn.metrics import r2_score
+from itertools import combinations
 
 
 def train_elasticnet_grid(X_train: pd.DataFrame|np.ndarray,
@@ -41,12 +42,19 @@ def train_elasticnet_grid(X_train: pd.DataFrame|np.ndarray,
     #   - Calculate R² score on training data
     #   - Store results
     # - Return DataFrame with results
+    results = pd.DataFrame(colunns = ['l1_ratio', 'alpha', 'r2_score', 'model'])
     
+    # Combination of all the parameters:
+    for l1,alpha in combinations(l1_ratios, alphas):
+        model = ElasticNet(l1_ratio=l1, alpha=alpha, max_iter=5000)
+        model.fit(X_train, y_train)
+        r2 = r2_score(y_train, model.predict(X_train))
+        results_df = pd.concat(objs = [results,pd.DataFrame({'l1_ratio': [l1], 'alpha': [alpha], 'r2_score': [r2], 'model': [model]})], ignore_index=True)
     
-    pass
+    return results_df
 
 
-def create_r2_heatmap(results_df, l1_ratios, alphas, output_path=None):
+def create_r2_heatmap(results_df: pd.DataFrame, l1_ratios: list, alphas: list, output_path=None):
     """
     Create a heatmap of R² scores across l1_ratio and alpha parameters.
     
@@ -73,7 +81,10 @@ def create_r2_heatmap(results_df, l1_ratios, alphas, output_path=None):
     # - Add colorbar
     # - Save to output_path if provided
     # - Return figure object
-    pass
+    pivot_df = pd.pivot_table(results_df, values=results_df.loc[:,'r2_score'].values, index=l1_ratios, columns=alphas)
+    fig = sns.heatmap(pivot_df, annot=True, cmap='coolwarm', cbar_kws={'label': r'R^2 Score'})
+    
+    return fig
 
 
 def get_best_elasticnet_model(X_train, y_train, X_test, y_test, 
@@ -116,4 +127,21 @@ def get_best_elasticnet_model(X_train, y_train, X_test, y_test,
     # - Train models using train_elasticnet_grid
     # - Select model with highest test R² (not training R²)
     # - Return dictionary with best model and parameters
-    pass
+    
+    results_df = pd.DataFrame(['model','best_l1_ratio','best_alpha','train_r2','test_r2','results_df'])
+    
+    for l1,alpha in combinations(l1_ratios,alphas):
+        model = ElasticNet(l1_ratio=l1, alpha=alpha, max_iter=5000)
+        model.fit(X_train, y_train)
+        r2_train = r2_score(y_train, model.predict(X_train)) # score the prediction on trained data (BAD).
+        r2_test = r2_score(y_test, model.predict(X_test)) # ----- on test data (GOOD).
+        results_df = pd.concat(objs = [results_df,pd.DataFrame({'l1_ratio': [l1], 
+                                                                'alpha': [alpha], 
+                                                                'train_r2': [r2_train], 
+                                                                'test_r2': [r2_test], 
+                                                                'model': [model]})], ignore_index=True)
+    
+    best_model = results_df.loc[results_df.loc[:,'test_r2'].idxmax(),:].to_dict(orient = 'records')
+    best_model['results_df'] = results_df
+    
+    return best_model
