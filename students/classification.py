@@ -42,6 +42,7 @@ def train_logistic_regression_grid(X_train, y_train, param_grid=None):
     # - Use GridSearchCV with cv=5
     # - Fit on training data
     # - Return fitted GridSearchCV object
+    
     pass
 
 
@@ -81,7 +82,10 @@ def train_knn_grid(X_train, y_train, param_grid=None):
     pass
 
 
-def get_best_logistic_regression(X_train, y_train, X_test, y_test, param_grid=None):
+def get_best_logistic_regression(X_train: pd.DataFrame|np.ndarray,
+                                 y_train: pd.Series|np.ndarray,
+                                 X_test: pd.DataFrame|np.ndarray,
+                                 y_test: pd.Series|np.ndarray, param_grid: dict = None):
     """
     Get best logistic regression model with test R² evaluation.
     

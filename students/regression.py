@@ -10,7 +10,10 @@ from sklearn.linear_model import ElasticNet
 from sklearn.metrics import r2_score
 
 
-def train_elasticnet_grid(X_train, y_train, l1_ratios, alphas):
+def train_elasticnet_grid(X_train: pd.DataFrame|np.ndarray,
+                          y_train: pd.Series|np.ndarray,
+                          l1_ratios: list|np.ndarray,
+                          alphas: list|np.ndarray) -> pd.DataFrame:
     """
     Train ElasticNet models over a grid of hyperparameters.
     
@@ -38,6 +41,8 @@ def train_elasticnet_grid(X_train, y_train, l1_ratios, alphas):
     #   - Calculate R² score on training data
     #   - Store results
     # - Return DataFrame with results
+    
+    
     pass
 
 

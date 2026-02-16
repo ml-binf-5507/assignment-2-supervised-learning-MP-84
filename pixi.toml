@@ -1,0 +1,19 @@
+[project]
+authors = ["Mark Persic <mpersic@torontomu.ca>"]
+channels = ["conda-forge"]
+description = "Add a short description here"
+name = "assignment-2-supervised-learning-MP-84"
+platforms = ["win-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "3.12.*"
+ipykernel = ">=7.2.0,<8"
+
+[pypi-dependencies]
+scikit-learn = ">=1.8.0, <2"
+pandas = ">=3.0.0, <4"
+matplotlib = ">=3.10.8, <4"
+seaborn = ">=0.13.2, <0.14"
