@@ -135,13 +135,14 @@ def get_best_elasticnet_model(X_train, y_train, X_test, y_test,
         model.fit(X_train, y_train)
         r2_train = r2_score(y_train, model.predict(X_train)) # score the prediction on trained data (BAD).
         r2_test = r2_score(y_test, model.predict(X_test)) # ----- on test data (GOOD).
+        
         results_df = pd.concat(objs = [results_df,pd.DataFrame({'l1_ratio': [l1], 
                                                                 'alpha': [alpha], 
                                                                 'train_r2': [r2_train], 
                                                                 'test_r2': [r2_test], 
                                                                 'model': [model]})], ignore_index=True)
     
-    best_model = results_df.loc[results_df.loc[:,'test_r2'].idxmax(),:].to_dict(orient = 'records')
+    best_model = results_df.loc[results_df.loc[:,'test_r2'].idxmax(),:].to_dict(orient = 'records')[0]
     best_model['results_df'] = results_df
     
     return best_model
